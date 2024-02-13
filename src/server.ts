@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import cors from "cors";
 import userRouter from "./routes/users.routes";
 import ip from "ip";
 
@@ -6,6 +7,8 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
+app.use(cors());
+
 app.use("/api/users", userRouter);
 
 // Middleware
