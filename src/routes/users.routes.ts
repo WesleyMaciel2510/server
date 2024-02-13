@@ -1,5 +1,6 @@
 import express from "express";
 import users from "../mock/users";
+import { createUser } from "../database/createUser";
 
 const userRouter = express.Router();
 
@@ -23,8 +24,12 @@ userRouter.get("/:ID", (req, res) => {
 });
 // ==========================================================
 userRouter.post("/", (req, res) => {
-  console.log("POST CALLED");
-  users.push(req.body);
+  console.log("req.body = ", req.body);
+
+  console.log("@@@@@@@@@@@@ POST CALLED");
+  console.log("req.body before send to sqlite = ", req.body);
+  createUser(req.body);
+  //users.push(req.body);
   res.status(201).send("User registered successfully!");
 });
 // ==========================================================
