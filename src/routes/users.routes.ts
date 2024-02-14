@@ -51,7 +51,6 @@ userRouter.post("/", (req, res) => {
   console.log("POST CALLED");
   console.log("req.body before send to sqlite = ", req.body);
   createUser(req.body);
-  //users.push(req.body);
   res.status(201).send("User registered successfully!");
 });
 // ==========================================================
@@ -67,8 +66,13 @@ userRouter.delete("/:ID", (req, res) => {
 // ==========================================================
 userRouter.put("/:ID", (req, res) => {
   console.log("UPDATE CALLED");
-
-  res.send(`User updated successfully!`);
+  const index = parseInt(req.params.ID);
+  if (parseInt(req.params.ID) > 0) {
+    updateUser(index, req.body);
+    res.send(`User updated successfully!`);
+  } else {
+    res.status(404).send(`User with ID ${req.params.ID} not found.`);
+  }
 });
 
 export default userRouter;

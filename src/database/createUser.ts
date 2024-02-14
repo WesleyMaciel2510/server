@@ -24,7 +24,6 @@ export async function createUser(user: {
     user.AccessLevel,
     user.IsActive ? 1 : 0
   );
-  console.log("USUÁRIO CRIADO = ", result);
 
   console.log("User created successfully with ID:", result.lastInsertRowid);
 }
