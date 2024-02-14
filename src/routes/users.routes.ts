@@ -1,32 +1,49 @@
 import express from "express";
-import users from "../mock/users";
-import { createUser } from "../database/createUser";
+//import users from "../mock/users";
+import {
+  createUser,
+  readUsers,
+  readUserByID,
+  updateUser,
+  deleteUser,
+} from "../database/index";
+
+interface User {
+  ID: number;
+  Name: string;
+  UserName: string;
+  Password: string;
+  Email: string;
+  AccessLevel: number;
+  IsActive: boolean;
+}
 
 const userRouter = express.Router();
-
-// FUNCTIONS
-function searchUserWithID(ID: number) {
-  return users.find((user) => user.ID === ID);
-}
-function searchIndexUser(ID: number) {
-  const IDRECEBIDO = ID;
-  const IDFILTRADO = users.findIndex((user) => user.ID === ID);
-  return IDFILTRADO;
-}
 // ==========================================================
-userRouter.get("/", (req, res) => {
-  res.json(users);
+userRouter.get("/", async (req, res) => {
+  try {
+    const users = await readUsers();
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Error reading users:", error);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
-userRouter.get("/:ID", (req, res) => {
-  const foundUser = searchUserWithID(parseInt(req.params.ID));
-  res.json(foundUser);
+userRouter.get("/:ID", async (req, res) => {
+  if (parseInt(req.params.ID) > 0) {
+    const foundUser = await readUserByID(parseInt(req.params.ID));
+    res.status(200).json(foundUser);
+  } else {
+    res.status(404).send(`User with ID ${req.params.ID} not found.`);
+  }
 });
 // ==========================================================
 userRouter.post("/", (req, res) => {
   console.log("req.body = ", req.body);
 
-  console.log("@@@@@@@@@@@@ POST CALLED");
+  console.log("POST CALLED");
   console.log("req.body before send to sqlite = ", req.body);
   createUser(req.body);
   //users.push(req.body);
@@ -35,22 +52,17 @@ userRouter.post("/", (req, res) => {
 // ==========================================================
 userRouter.delete("/:ID", (req, res) => {
   console.log("DELETE CALLED");
-  let index = searchIndexUser(parseInt(req.params.ID));
-  users.splice(index, 1);
-  res.send(`User deleted successfully!`);
+  if (parseInt(req.params.ID) > 0) {
+    deleteUser(parseInt(req.params.ID));
+    res.send(`User deleted successfully!`);
+  } else {
+    res.status(404).send(`User with ID ${req.params.ID} not found.`);
+  }
 });
 // ==========================================================
 userRouter.put("/:ID", (req, res) => {
   console.log("UPDATE CALLED");
-  let index = searchIndexUser(parseInt(req.params.ID));
-  //validating to not update if anything is undefined
-  req.body.Name !== undefined ? (users[index].Name = req.body.Name) : null;
-  req.body.AccessLevel !== undefined
-    ? (users[index].AccessLevel = req.body.AccessLevel)
-    : null;
-  req.body.IsActive !== undefined
-    ? (users[index].IsActive = req.body.IsActive)
-    : null;
+
   res.send(`User updated successfully!`);
 });
 

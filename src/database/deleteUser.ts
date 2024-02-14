@@ -3,12 +3,22 @@ import { db } from "./createTable";
 export async function deleteUser(userId: number) {
   console.log(`Deleting user with ID ${userId}`);
 
-  const deleteStatement = db.prepare(`
+  try {
+    const deleteStatement = db.prepare(`
       DELETE FROM users
       WHERE ID = ?
     `);
 
-  const result = deleteStatement.run(userId);
+    const result = deleteStatement.run(userId);
 
-  console.log(`User with ID ${userId} deleted successfully.`);
+    if (result.changes === 0) {
+      console.log(`User with ID ${userId} does not exist.`);
+      throw new Error(`User with ID ${userId} does not exist.`);
+    }
+
+    console.log(`User with ID ${userId} deleted successfully.`);
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    throw error;
+  }
 }

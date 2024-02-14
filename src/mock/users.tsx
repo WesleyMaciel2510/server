@@ -8,11 +8,11 @@ export interface User {
 const users = [
   {
     ID: 1,
-    Name: "Carlos Silva",
-    Username: "carlos.silva",
-    Password: "house123",
-    Email: "carlos456@gmail.com",
-    AccessLevel: 1,
+    Name: "Wesley Franco Maciel",
+    UserName: "wesley.maciel",
+    Password: "casa123",
+    Email: "wesley.maciel333@gmail.com",
+    AccessLevel: 2,
     IsActive: true,
   },
   {

@@ -11,6 +11,7 @@ export async function createUser(user: {
   console.log("chamou createUser");
   console.log("data received in the server = ", user);
   console.log("user.name = ", user.Name);
+  console.log("user.UserName = ", user.UserName);
   const insertUser = db.prepare(`
       INSERT INTO users ( Name, Username, Password, Email, AccessLevel, IsActive)
       VALUES (?, ?, ?, ?, ?, ?)
