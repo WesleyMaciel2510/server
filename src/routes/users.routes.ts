@@ -34,11 +34,16 @@ userRouter.get("/", async (req, res) => {
 userRouter.get("/:ID", async (req, res) => {
   if (parseInt(req.params.ID) > 0) {
     const foundUser = await readUserByID(parseInt(req.params.ID));
-    res.status(200).json(foundUser);
+    if (foundUser.length) {
+      res.status(200).json(foundUser);
+    } else {
+      res.status(404).send(`User with ID ${req.params.ID} not found.`);
+    }
   } else {
     res.status(404).send(`User with ID ${req.params.ID} not found.`);
   }
 });
+
 // ==========================================================
 userRouter.post("/", (req, res) => {
   console.log("req.body = ", req.body);
