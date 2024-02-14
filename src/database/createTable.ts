@@ -6,9 +6,8 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS users (
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
     Name TEXT NOT NULL,
-    UserName TEXT UNIQUE NOT NULL,
-    Password TEXT NOT NULL,
     Email TEXT UNIQUE NOT NULL,
+    Password TEXT NOT NULL,
     AccessLevel INTEGER NOT NULL,
     IsActive INTEGER NOT NULL
   );

@@ -1,25 +1,50 @@
 import express from "express";
-//import users from "../mock/users";
 import {
   createUser,
   readUsers,
   readUserByID,
+  readUserByParam,
   updateUser,
   deleteUser,
+  logUserIn,
 } from "../database/index";
 
 interface User {
   ID: number;
   Name: string;
-  UserName: string;
-  Password: string;
   Email: string;
+  Password: string;
   AccessLevel: number;
   IsActive: boolean;
 }
 
 const userRouter = express.Router();
 // ==========================================================
+userRouter.get("/search", async (req, res) => {
+  try {
+    console.log("SEARCH CALLED");
+    console.log("DATA RECEIVED = ", req.body);
+    //remember to pass only one param at time for the function below
+    readUserByParam(req.body);
+  } catch (error) {
+    console.error("Error reading users:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+userRouter.get("/login", async (req, res) => {
+  try {
+    console.log("Query parameters = ", req.query);
+    const credentialsObject = JSON.parse(JSON.stringify(req.query));
+    console.log("credentialsObject = ", credentialsObject);
+    const users = await logUserIn(credentialsObject);
+    users ? res.status(200).send(true) : res.status(200).send(false);
+  } catch (error) {
+    console.error("Login Error:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 userRouter.get("/", async (req, res) => {
   try {
     const users = await readUsers();

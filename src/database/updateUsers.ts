@@ -4,9 +4,8 @@ export async function updateUser(
   userId: number,
   newData: {
     Name?: string;
-    UserName?: string;
-    Password?: string;
     Email?: string;
+    Password?: string;
     AccessLevel?: number;
     IsActive?: any;
   }
@@ -19,9 +18,8 @@ export async function updateUser(
 
   // Check each field in newData and add it to the SET clauses if it's provided
   if (newData.Name !== undefined) setClauses.push("Name = ?");
-  if (newData.UserName !== undefined) setClauses.push("UserName = ?");
-  if (newData.Password !== undefined) setClauses.push("Password = ?");
   if (newData.Email !== undefined) setClauses.push("Email = ?");
+  if (newData.Password !== undefined) setClauses.push("Password = ?");
   if (newData.AccessLevel !== undefined) setClauses.push("AccessLevel = ?");
   if (newData.IsActive !== undefined) setClauses.push("IsActive = ?");
 
