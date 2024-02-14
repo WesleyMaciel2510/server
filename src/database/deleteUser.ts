@@ -15,7 +15,8 @@ export async function deleteUser(userId: number) {
       console.log(`User with ID ${userId} does not exist.`);
       throw new Error(`User with ID ${userId} does not exist.`);
     }
-
+    // Reset the auto-increment counter for the users table
+    db.exec("DELETE FROM sqlite_sequence WHERE name = 'users'");
     console.log(`User with ID ${userId} deleted successfully.`);
   } catch (error) {
     console.error("Error deleting user:", error);

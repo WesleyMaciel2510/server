@@ -5,6 +5,5 @@ export async function readUsers() {
 
   const users = db.prepare("SELECT * FROM users").all();
 
-  console.log("Users:", users);
   return users;
 }
