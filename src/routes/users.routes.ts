@@ -32,17 +32,6 @@ userRouter.get("/search", async (req, res) => {
   }
 });
 
-userRouter.get("/login", async (req, res) => {
-  try {
-    console.log("req.body = ", req.body);
-    const users = await logUserIn(req.body);
-    users ? res.status(200).send(true) : res.status(200).send(false);
-  } catch (error) {
-    console.error("Login Error:", error);
-    res.status(500).send("Internal Server Error");
-  }
-});
-
 userRouter.get("/", async (req, res) => {
   try {
     const users = await readUsers();
@@ -75,6 +64,16 @@ userRouter.post("/", (req, res) => {
   console.log("req.body before send to sqlite = ", req.body);
   createUser(req.body);
   res.status(201).send("User registered successfully!");
+});
+userRouter.post("/login", async (req, res) => {
+  try {
+    console.log("req.body = ", req.body);
+    const users = await logUserIn(req.body);
+    users ? res.status(200).send(true) : res.status(404).send(false);
+  } catch (error) {
+    console.error("Login Error:", error);
+    res.status(500).send("Internal Server Error");
+  }
 });
 // ==========================================================
 userRouter.delete("/:ID", (req, res) => {

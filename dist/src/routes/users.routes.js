@@ -1,51 +1,83 @@
 import express from "express";
-import { createUser } from "../database/createUser";
+import { createUser, readUsers, readUserByID, readUserByParam, updateUser, deleteUser, logUserIn, } from "../database/index";
 const userRouter = express.Router();
-// FUNCTIONS
-function searchUserWithID(ID) {
-  return users.find((user) => user.ID === ID);
-}
-function searchIndexUser(ID) {
-  const IDRECEBIDO = ID;
-  const IDFILTRADO = users.findIndex((user) => user.ID === ID);
-  return IDFILTRADO;
-}
 // ==========================================================
-userRouter.get("/", (req, res) => {
-  res.json(users);
+userRouter.get("/search", async (req, res) => {
+    try {
+        console.log("SEARCH CALLED");
+        console.log("DATA RECEIVED = ", req.body);
+        //remember to pass only one param at time for the function below
+        readUserByParam(req.body);
+    }
+    catch (error) {
+        console.error("Error reading users:", error);
+        res.status(500).send("Internal Server Error");
+    }
 });
-userRouter.get("/:ID", (req, res) => {
-  const foundUser = searchUserWithID(parseInt(req.params.ID));
-  res.json(foundUser);
+userRouter.get("/", async (req, res) => {
+    try {
+        const users = await readUsers();
+        res.status(200).json(users);
+    }
+    catch (error) {
+        console.error("Error reading users:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+userRouter.get("/:ID", async (req, res) => {
+    if (parseInt(req.params.ID) > 0) {
+        const foundUser = await readUserByID(parseInt(req.params.ID));
+        if (foundUser.length) {
+            res.status(200).json(foundUser);
+        }
+        else {
+            res.status(404).send(`User with ID ${req.params.ID} not found.`);
+        }
+    }
+    else {
+        res.status(404).send(`User with ID ${req.params.ID} not found.`);
+    }
 });
 // ==========================================================
 userRouter.post("/", (req, res) => {
-  console.log("req.body = ", req.body);
-  console.log("@@@@@@@@@@@@ POST CALLED");
-  console.log("req.body before send to sqlite = ", req.body);
-  createUser(req.body);
-  //users.push(req.body);
-  res.status(201).send("User registered successfully!");
+    console.log("req.body = ", req.body);
+    console.log("POST CALLED");
+    console.log("req.body before send to sqlite = ", req.body);
+    createUser(req.body);
+    res.status(201).send("User registered successfully!");
+});
+userRouter.post("/login", async (req, res) => {
+    try {
+        console.log("req.body = ", req.body);
+        const users = await logUserIn(req.body);
+        users ? res.status(200).send(true) : res.status(200).send(false);
+    }
+    catch (error) {
+        console.error("Login Error:", error);
+        res.status(500).send("Internal Server Error");
+    }
 });
 // ==========================================================
 userRouter.delete("/:ID", (req, res) => {
-  console.log("DELETE CALLED");
-  let index = searchIndexUser(parseInt(req.params.ID));
-  users.splice(index, 1);
-  res.send(`User deleted successfully!`);
+    console.log("DELETE CALLED");
+    if (parseInt(req.params.ID) > 0) {
+        deleteUser(parseInt(req.params.ID));
+        res.send(`User deleted successfully!`);
+    }
+    else {
+        res.status(404).send(`User with ID ${req.params.ID} not found.`);
+    }
 });
 // ==========================================================
 userRouter.put("/:ID", (req, res) => {
-  console.log("UPDATE CALLED");
-  let index = searchIndexUser(parseInt(req.params.ID));
-  //validating to not update if anything is undefined
-  req.body.Name !== undefined ? (users[index].Name = req.body.Name) : null;
-  req.body.AccessLevel !== undefined
-    ? (users[index].AccessLevel = req.body.AccessLevel)
-    : null;
-  req.body.IsActive !== undefined
-    ? (users[index].IsActive = req.body.IsActive)
-    : null;
-  res.send(`User updated successfully!`);
+    console.log("UPDATE CALLED");
+    const index = parseInt(req.params.ID);
+    if (parseInt(req.params.ID) > 0) {
+        updateUser(index, req.body);
+        res.send(`User updated successfully!`);
+    }
+    else {
+        res.status(404).send(`User with ID ${req.params.ID} not found.`);
+    }
 });
 export default userRouter;
