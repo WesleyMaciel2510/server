@@ -34,10 +34,8 @@ userRouter.get("/search", async (req, res) => {
 
 userRouter.get("/login", async (req, res) => {
   try {
-    console.log("Query parameters = ", req.query);
-    const credentialsObject = JSON.parse(JSON.stringify(req.query));
-    console.log("credentialsObject = ", credentialsObject);
-    const users = await logUserIn(credentialsObject);
+    console.log("req.body = ", req.body);
+    const users = await logUserIn(req.body);
     users ? res.status(200).send(true) : res.status(200).send(false);
   } catch (error) {
     console.error("Login Error:", error);

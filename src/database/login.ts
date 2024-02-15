@@ -1,5 +1,10 @@
 import { db } from "./createTable";
 
+interface User {
+  id: number;
+  email: string;
+}
+
 export async function logUserIn(credentials: object) {
   console.log("called logUserIn");
   console.log("credentials = ", credentials);
@@ -11,9 +16,13 @@ export async function logUserIn(credentials: object) {
     "SELECT * FROM users WHERE Email = ? AND Password = ?"
   );
 
-  //Execute the query with provided email and password
-  const userFound = await query.get(email, password);
-
-  console.log("User Found:", userFound);
-  return true;
+  // Execute the query and check if a user with the given credentials exists
+  const userFound = query.get(email, password);
+  if (userFound) {
+    console.log("User found:", userFound);
+    return true;
+  } else {
+    console.log("User not found or invalid credentials.");
+    return false;
+  }
 }
